@@ -285,7 +285,7 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 
 ### 1. ~~A reactive container view controller (Me)~~
 ### 2. Functional data processing (Mark Corbyn)
-### 3. <something> (Jeames Bone)
+### 3. Reactive Notifications (Jeames Bone)
 
 ---
 
@@ -398,7 +398,7 @@ for (id<Voucher> voucher in vouchersWithValue) {
 
 ### 1. ~~A reactive container view controller (Me)~~
 ### 2. ~~Functional data processing (Mark Corbyn)~~
-### 3. <something> (Jeames Bone)
+### 3. Reactive Notifications (Jeames Bone)
 
 ---
 
