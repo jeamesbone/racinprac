@@ -64,7 +64,7 @@ RACSignal *numberSignal = [textSignal map:^(NSString *text) {
 
 ### 1. A reactive container view controller (Me)
 ### 2. Functional data processing (Mark Corbyn)
-### 3. <something> (Jeames Bone)
+### 3. Reactive Notifications (Jeames Bone)
 
 ---
 
@@ -285,4 +285,164 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 
 ### 1. ~~A reactive container view controller (Me)~~
 ### 2. Functional data processing (Mark Corbyn)
-### 3. <something> (Jeames Bone)
+### 3. Reactive Notifications (Jeames Bone)
+
+---
+
+# Reactive Notifications
+
+---
+
+## Push notifications (old school style)
+
+```objc
+  - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    // Do something horrible™ in here
+  }
+```
+
+---
+
+## A better option:
+
+```objc
+  typedef NS_ENUM(NSUInteger, NotificationType) {
+    NotificationTypeA,
+    NotificationTypeB,
+    NotificationTypeC,
+  };
+
+  @protocol NotificationProvider
+
+  - (RACSignal *)notificationSignalForNotificationType:(NotificationType)type;
+
+  @end
+```
+
+---
+
+## A new friend!
+
+```objc
+  - (RACSignal *)rac_signalForSelector:(SEL)selector;
+  - (RACSignal *)rac_signalForSelector:(SEL)selector fromProtocol:(Protocol *)protocol;
+```
+
+Lifts a selector into the world of signals.
+
+The returned signal will fire an event every time the method is called.
+
+^ This is a hot signal
+^ No need to implement the method yourself, if there is no implementation RAC will add an empty one
+
+---
+
+## Lets do it
+
+```objc
+  - (RACSignal *)notificationSignalForNotificationType:(NotificationType)type {
+    return [[[self
+      rac_signalForSelector:@selector(application:didReceiveRemoteNotification:)]
+      map:^(RACTuple *arguments) {
+        return arguments.second;
+      }]
+      flattenMap:^(NSDictionary *userInfo) {
+        // Parse our user info dictionary into a model object
+        return [self parseNotification:userInfo];
+      }]
+      filter:^(Notification *notification) {
+        notification.type = type;
+      }];
+  }
+```
+
+---
+
+## Problem? Signal is too hot!
+- We only get notifications sent *after* we subscribe.
+- We can't easily update app state or UI later on.
+
+---
+
+## Solution?
+## `replayLast`
+
+- Whenever you subscribe to the signal, it will immediately send you the most recent value in the stream.
+
+---
+
+```objc
+  self.notificationSignal = [[[[self
+      rac_signalForSelector:@selector(application:didReceiveRemoteNotification:)]
+      map:^(RACTuple *arguments) {
+        return arguments.second;
+      }]
+      flattenMap:^(NSDictionary *userInfo) {
+        // Parse our user info dictionary into a model object
+        return [self parseNotification:userInfo];
+      }]
+      replayLast];
+
+
+
+  - (RACSignal *)notificationSignalForNotificationType:(NotificationType)type {
+    return [self.notificationSignal
+      filter:^(Notification *notification) {
+        return notification.type = type;
+      }]
+  }
+```
+
+---
+
+## A wild local notification appears!
+
+---
+
+### Now we have 2 sources of notifications
+- We don't want to duplicate our current notification handling.
+- Local and remote notifications should have the same effects.
+
+---
+
+```objc
+  RACSignal *remoteNotificationInfo = [][self
+    rac_signalForSelector:@selector(application:didReceiveRemoteNotification:)]
+    map:^(RACTuple *arguments) {
+      return arguments.second
+    }];
+
+  RACSignal *localNotificationInfo = [self
+    rac_signalForSelector:@selector(application:didReceiveLocalNotification:)]
+    map:^(RACTuple *arguments) {
+      UILocalNotification *notification = arguments.second;
+      return notification.userInfo;
+    };
+
+  self.notificationSignal =
+      [remoteNotificationInfo merge:localNotificationInfo]
+      flattenMap:^(NSDictionary *userInfo) {
+        // Parse our user info dictionary into a model object
+        return [self parseNotification:userInfo];
+      }]
+      replayLast];
+```
+
+---
+
+## Lets use it!
+
+```objc
+  @property id<NotificationProvider> notificationProvider;
+
+  - (void)viewDidLoad {
+    [[[self.notificationProvider
+      notificationSignalForNotificationType:NotificationTypeA]
+      flattenMap:^(Notification *notification) {
+        [self getAwesomeModel];
+      }]
+      subscribeNext^(AwesomeModel *model) {
+        [self updateInterfaceWithModel:model];
+      }]
+  }
+```
