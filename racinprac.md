@@ -399,3 +399,179 @@ for (id<Voucher> voucher in vouchersWithValue) {
 ### 3. <something> (Jeames Bone)
 
 ---
+
+# Reactive Notifications
+
+---
+
+## Push notifications (old school style)
+
+```objc
+  - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
+    // Do something horrible™ in here
+  }
+```
+
+---
+
+## A better option:
+
+```objc
+  typedef NS_ENUM(NSUInteger, NotificationType) {
+    NotificationTypeA,
+    NotificationTypeB,
+    NotificationTypeC,
+  };
+
+  @protocol NotificationProvider
+
+  - (RACSignal *)notificationSignalForNotificationType:(NotificationType)type;
+
+  @end
+```
+
+---
+
+## We want dis:
+
+```objc
+  @property id<NotificationProvider> notificationProvider;
+
+  - (void)viewDidLoad {
+    [[[self.notificationProvider
+      notificationSignalForNotificationType:NotificationTypeA]
+      map:^(Notification *notification) {
+        return notification.model;
+      }]
+      subscribeNext^(AwesomeModel *model) {
+        [self updateInterfaceWithModel:model];
+      }]
+  }
+```
+
+---
+
+![](http://vignette1.wikia.nocookie.net/katyperry/images/4/45/Katyperry_hotncold.jpg/revision/latest?cb=20140211091238)
+
+---
+
+## Hot Signals
+- Events happen regardless of any observers.
+- Stream of *events* happening in the world.
+- e.g. button presses, notifications
+
+---
+
+## Cold Signals
+- Subscribing starts the stream of events.
+- Stream of *results* caused by some side effects.
+- e.g. network calls, database transactions
+
+---
+
+## A new friend!
+
+```objc
+  - (RACSignal *)rac_signalForSelector:(SEL)selector;
+  - (RACSignal *)rac_signalForSelector:(SEL)selector fromProtocol:(Protocol *)protocol;
+```
+
+Lifts a selector into the world of signals.
+
+The returned signal will fire an event every time the method is called.
+
+^ This is a hot signal
+^ Sends a tuple whenever the method is called
+^ A tuple is like an array with a fixed size. Objective-C does not have an in-built tuple class so RAC provides one. In this case it will have 2 values: the application and the notification info
+
+---
+
+## Lets do it
+
+```objc
+  - (RACSignal *)notificationSignalForNotificationType:(NotificationType)type {
+    return [[[self
+      rac_signalForSelector:@selector(application:didReceiveRemoteNotification:)]
+      map:^(RACTuple *arguments) {
+        return arguments.second;
+      }]
+      flattenMap:^(NSDictionary *userInfo) {
+        // Parse our user info dictionary into a model object
+        return [self parseNotification:userInfo];
+      }]
+      filter:^(Notification *notification) {
+        notification.type = type;
+      }];
+  }
+```
+
+---
+
+## A wild local notification appears!
+
+---
+
+### Now we have 2 sources of notifications
+- We don't want to duplicate our current notification handling.
+- Local and remote notifications should have the same effects.
+
+---
+
+```objc
+  RACSignal *remoteNotificationInfo = [[self
+    rac_signalForSelector:@selector(application:didReceiveRemoteNotification:)]
+    map:^(RACTuple *arguments) {
+      return arguments.second
+    }];
+
+  RACSignal *localNotificationInfo = [[self
+    rac_signalForSelector:@selector(application:didReceiveLocalNotification:)]
+    map:^(RACTuple *arguments) {
+      UILocalNotification *notification = arguments.second;
+      return notification.userInfo;
+    }];
+
+  self.notificationSignal =
+      [[remoteNotificationInfo merge:localNotificationInfo]
+      flattenMap:^(NSDictionary *userInfo) {
+        // Parse our user info dictionary into a model object
+        return [self parseNotification:userInfo];
+      }];
+```
+
+---
+
+## Problem? Signal is too hot!
+- We only get notifications sent *after* we subscribe.
+- We can't easily update app state or UI that is created after the notification is sent.
+
+---
+
+## Solution?
+## `replayLast`
+
+- Whenever you subscribe to the signal, it will immediately send you the most recent value from the stream.
+
+---
+
+```objc
+  self.notificationSignal = [[[[self
+      rac_signalForSelector:@selector(application:didReceiveRemoteNotification:)]
+      map:^(RACTuple *arguments) {
+        return arguments.second;
+      }]
+      flattenMap:^(NSDictionary *userInfo) {
+        // Parse our user info dictionary into a model object
+        return [self parseNotification:userInfo];
+      }]
+      replayLast];
+
+
+
+  - (RACSignal *)notificationSignalForNotificationType:(NotificationType)type {
+    return [self.notificationSignal
+      filter:^(Notification *notification) {
+        return notification.type = type;
+      }]
+  }
+```
