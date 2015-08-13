@@ -306,18 +306,7 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
   NSArray *sortedVouchers = [vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
-	NSDecimalNumber *voucher1Amount = voucher1.amount;
-	NSDecimalNumber *voucher2Amount = voucher2.amount;
-
-	if (voucher1Amount == nil && voucher2Amount == nil) {
-	  return NSOrderedSame;
-	} else if (voucher1Amount == nil) {
-	  return NSOrderedDescending;
-	} else if (voucher2Amount == nil) {
-	  return NSOrderedAscending;
-	} else {
-	  return [voucher1Amount compare:voucher2Amount];
-	}
+	return [voucher1 compare:voucher2];
   }];
 
   id<Voucher> bestVoucher = nil;
@@ -334,6 +323,26 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
   }
 
   return bestVoucher;
+}
+```
+
+---
+
+```objc
+- (NSComparisonResult)compare:(id<Voucher>)anotherVoucher
+
+	NSDecimalNumber *voucher1Amount = self.amount;
+	NSDecimalNumber *voucher2Amount = anotherVoucher.amount;
+
+	if (voucher1Amount == nil && voucher2Amount == nil) {
+	  return NSOrderedSame;
+	} else if (voucher1Amount == nil) {
+	  return NSOrderedDescending;
+	} else if (voucher2Amount == nil) {
+	  return NSOrderedAscending;
+	} else {
+	  return [voucher1Amount compare:voucher2Amount];
+	}
 }
 ```
 
@@ -370,18 +379,7 @@ for (id<Voucher> voucher in vouchersWithValue) {
 [[[[[[[[self voucherLibrary]
     vouchers]
     sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
-      NSDecimalNumber *voucher1Amount = voucher1.amount;
-      NSDecimalNumber *voucher2Amount = voucher2.amount;
-
-      if (voucher1Amount == nil && voucher2Amount == nil) {
-        return NSOrderedSame;
-      } else if (voucher1Amount == nil) {
-        return NSOrderedDescending;
-      } else if (voucher2Amount == nil) {
-        return NSOrderedAscending;
-      } else {
-        return [voucher1Amount compare:voucher2Amount];
-      }
+      return [voucher1 compare:voucher2];
     }]
     rac_sequence]
     filter:^BOOL(id<Voucher> voucher) {
