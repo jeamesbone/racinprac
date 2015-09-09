@@ -305,9 +305,9 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 
 ---
 
-### 1. ~~A reactive container view controller (Me)~~
-### 2. Reactive Notifications (Jeames Bone)
-### 3. Functional data processing (Mark Corbyn)
+### 1. ~~A reactive container view controller~~
+### 2. Reactive Notifications
+### 3. Functional data processing
 
 ---
 
