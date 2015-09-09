@@ -25,6 +25,7 @@
 [textField.rac_textSignal subsribeNext:^(NSString *text) {
   NSLog(@"hey, the text changed! %@", text);
 }];
+// ["r", "re", "rea", "reac", "react"]
 ```
 
 ^ This talk is not meant to teach you the basics, but we'll give you a quick refresher on how it works.
@@ -37,9 +38,35 @@
 RACSignal *numberSignal = [textSignal map:^(NSString *text) {
   return @(text.integerValue);
 }];
+// [1, 2, 3, 4, 5, 6]
+
+RACSignal *evenNumberSignal = [numberSignal filter:^(NSNumber *number) {
+  return (number / 2 == 0)
+}]
+// [2, 4, 6]
 ```
 
 ---
+
+- And to combine them
+
+```objc
+RACSignal *firstSignal; // [1, 3, 5, 7]
+RACSignal *secondSignal; // [2, 4, 6, 8]
+
+RACSignal *mergedSignal = [firstSignal merge:secondSignal];
+// [1, 2, 3, 4, 5, 6, 7, 8]
+
+RACSignal *concatSignal = [firstSignal concat:secondSignal];
+// [1, 3, 5, 7, 2, 4, 6, 8]
+
+RACSignal *combineLatest = [firstSignal combineLatestWith:secondSignal];
+// [(1, 2), (3, 4), (5, 6), (7, 8)]
+```
+
+---
+
+## Why Signals?
 
 - They’ll solve all your problems
 - Magic and stuff
