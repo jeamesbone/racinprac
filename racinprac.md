@@ -2,8 +2,8 @@
 # [fit] IN
 # [fit] PRACTICE
 
-#### Adam Sharp (@sharplet) — Mark Corbyn (@markcorbyn) — Jeames Bone (@jeamesbone)
-#### August 2015
+#### Mark Corbyn (@markcorbyn) — Jeames Bone (@jeamesbone)
+#### YOW Connected
 
 ^ Last ~6 months team adopted ReactiveCocoa
 
