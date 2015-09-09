@@ -501,9 +501,9 @@ The returned signal will fire an event every time the method is called.
     NSDecimalNumber *voucherAmount = voucher.amount;
     if (!voucherAmount) continue;
 
-    if ([voucherAmount cch_isLessThen:purchaseAmount]) {
+    if ([voucherAmount isLessThan:purchaseAmount]) {
       bestVoucher = voucher;
-    } else if ([voucherAmount cch_isGreaterThanOrEqualTo:purchaseAmount]) {
+    } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
       bestVoucher = voucher;
       break;
     }
@@ -548,9 +548,9 @@ for (id<Voucher> voucher in sortedVouchers) {
 id<Voucher> bestVoucher = nil;
 for (id<Voucher> voucher in vouchersWithValue) {
   NSDecimalNumber *voucherAmount = voucher.amount;
-  if ([voucherAmount cch_isLessThen:purchaseAmount]) {
+  if ([voucherAmount isLessThen:purchaseAmount]) {
     bestVoucher = voucher;
-  } else if ([voucherAmount cch_isGreaterThanOrEqualTo:purchaseAmount]) {
+  } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
     bestVoucher = voucher;
     break;
   }
@@ -572,8 +572,8 @@ for (id<Voucher> voucher in vouchersWithValue) {
     filter:^BOOL(id<Voucher> voucher) {
       return voucher.amount != nil;
     }]
-    cch_takeUptoBlock:^BOOL(id<Voucher> voucher) {
-      return [voucher.amount cch_isGreaterThanOrEqualTo:purchaseAmount];
+    yow_takeUptoBlock:^BOOL(id<Voucher> voucher) {
+      return [voucher.amount isGreaterThanOrEqualTo:purchaseAmount];
     }]
     array]
     lastObject];
