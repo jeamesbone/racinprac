@@ -17,16 +17,7 @@
 
 ---
 
-![](http://cl.ly/image/1N2P053O0l3c/Screen%20Shot%202015-08-10%20at%208.26.41%20pm.png)
-
-# [fit] WATCH THIS
-
-#### Kevin O'neill - July 2015 - https://vimeo.com/133250189
-
-
----
-
-# What have we learned?
+# A Quick Introduction
 
 - Signals represent streams of values over time
 
@@ -35,6 +26,8 @@
   NSLog(@"hey, the text changed! %@", text);
 }];
 ```
+
+^ This talk is not meant to teach you the basics, but we'll give you a quick refresher on how it works.
 
 ---
 
@@ -587,6 +580,26 @@ for (id<Voucher> voucher in vouchersWithValue) {
 
 ---
 
-# Where to go next?
+## Resources
+
+- [reactivecocoa.io](http://reactivecocoa.io)
+- [ReactiveCocoa on GitHub](https://github.com/ReactiveCocoa/ReactiveCocoa)
+
+- [ReactiveCocoa - The Definitive Introduction (Ray Wenderlich)](http://www.raywenderlich.com/62699/reactivecocoa-tutorial-pt1)
+- [A First Look at ReactiveCocoa 3.0 (Scott Logic)](http://blog.scottlogic.com/2015/04/24/first-look-reactive-cocoa-3.html)
+
+^ Philosophy page on reactivecocoa.io is awesome for explaining why we want to use FRP
+^ Very well documented source code
+^ These tutorials are a great introduction if you haven't seen this stuff before
+^ For a swift introduction, the Scott Logic article is great (especially if you've used the objective-c framework)
 
 ---
+
+## Next Steps
+
+- Try it!
+- Don't be scared to go too far
+
+^ Try using reactivecocoa in your own projects
+^ Don't be scared to experiment, we use it very heavily in our current project and we've found that it is
+  incredibly flexible and can be applied to almost any problem.
