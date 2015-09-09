@@ -55,6 +55,7 @@ RACSignal *numberSignal = [textSignal map:^(NSString *text) {
 ---
 
 # What *haven’t* we learned?
+^ ReactiveCocoa is a very powerful tool for modeling systems in your app, and we'd like to show you some more exciting examples.
 
 ^ All examples will be taken from real code my team's worked on
 
@@ -62,9 +63,9 @@ RACSignal *numberSignal = [textSignal map:^(NSString *text) {
 
 ---
 
-### 1. A reactive container view controller (Me)
-### 2. Functional data processing (Mark Corbyn)
-### 3. <something> (Jeames Bone)
+### 1. A reactive container view controller
+### 2. Reactive Notifications
+### 3. Functional data processing
 
 ---
 
@@ -94,6 +95,8 @@ RACSignal *numberSignal = [textSignal map:^(NSString *text) {
 // whenever we log in or out.
 RACSignal *authenticatedSignal = RACObserve(authStore, authenticated);
 ```
+
+^ RACObserve can be used to create a signal that fires every time a property changes
 
 ---
 
@@ -130,11 +133,16 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 }
 ```
 
+^ Problems with this approach
+^ If we are in a navigation controller this will keep pushing a new view controller onto the stack.
+
 ---
 
 ### Ok, so maybe that’s pushing it
 
 #### Let’s make a custom view controller container!
+
+^ We'll make a custom container that will display the latest view controller sent on a signal.
 
 ---
 
@@ -187,6 +195,8 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 }
 ```
 
+^ Most of this is just container view controller boilerplate
+
 ---
 
 ### Tying a 🎀 on it
@@ -196,14 +206,6 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 ### Tying a 🎀 on it
 
 - What happens if the view controller changes rapidly (faster than the animation?)
-- What happens when the view controller is not on screen? Or deallocated?
-
----
-
-### Tying a 🎀 on it
-
-- ~~What happens if the view controller changes rapidly (faster than the animation?)~~
-- What happens when the view controller is not on screen? Or deallocated?
 
 ---
 
@@ -284,119 +286,8 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 ---
 
 ### 1. ~~A reactive container view controller (Me)~~
-### 2. Functional data processing (Mark Corbyn)
-### 3. <something> (Jeames Bone)
-
----
-
-## Describing an algorithm with functions
-
-### Example: Finding the best voucher to cover a purchase
-
-- If there are vouchers with higher value than the purchase, use the lowest valued one
-- Otherwise, use the highest valued voucher available
-
----
-
-# Imperative approach
-
-```objc
-- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
-
-  NSArray *vouchers = [[self voucherLibrary] vouchers];
-
-  NSArray *sortedVouchers = [vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
-	return [voucher1 compare:voucher2];
-  }];
-
-  id<Voucher> bestVoucher = nil;
-  for (id<Voucher> voucher in sortedVouchers) {
-    NSDecimalNumber *voucherAmount = voucher.amount;
-    if (!voucherAmount) continue;
-
-    if ([voucherAmount cch_isLessThen:purchaseAmount]) {
-      bestVoucher = voucher;
-    } else if ([voucherAmount cch_isGreaterThanOrEqualTo:purchaseAmount]) {
-      bestVoucher = voucher;
-      break;
-    }
-  }
-
-  return bestVoucher;
-}
-```
-
----
-
-```objc
-- (NSComparisonResult)compare:(id<Voucher>)anotherVoucher
-
-	NSDecimalNumber *voucher1Amount = self.amount;
-	NSDecimalNumber *voucher2Amount = anotherVoucher.amount;
-
-	if (voucher1Amount == nil && voucher2Amount == nil) {
-	  return NSOrderedSame;
-	} else if (voucher1Amount == nil) {
-	  return NSOrderedDescending;
-	} else if (voucher2Amount == nil) {
-	  return NSOrderedAscending;
-	} else {
-	  return [voucher1Amount compare:voucher2Amount];
-	}
-}
-```
-
----
-
-# Separate the nil filter?
-
-```objc
-NSMutableArray *vouchersWithValue = [NSMutableArray array];
-for (id<Voucher> voucher in sortedVouchers) {
-	if (voucher.amount) {
-	  [vouchersWithValue addObject:voucher];
-	}
-}
-
-id<Voucher> bestVoucher = nil;
-for (id<Voucher> voucher in vouchersWithValue) {
-  NSDecimalNumber *voucherAmount = voucher.amount;
-  if ([voucherAmount cch_isLessThen:purchaseAmount]) {
-    bestVoucher = voucher;
-  } else if ([voucherAmount cch_isGreaterThanOrEqualTo:purchaseAmount]) {
-    bestVoucher = voucher;
-    break;
-  }
-}
-```
-
----
-
-# Functional
-
-```objc
-- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
-[[[[[[[[self voucherLibrary]
-    vouchers]
-    sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
-      return [voucher1 compare:voucher2];
-    }]
-    rac_sequence]
-    filter:^BOOL(id<Voucher> voucher) {
-      return voucher.amount != nil;
-    }]
-    cch_takeUptoBlock:^BOOL(id<Voucher> voucher) {
-      return [voucher.amount cch_isGreaterThanOrEqualTo:purchaseAmount];
-    }]
-    array]
-    lastObject];
-```
-
----
-
-### 1. ~~A reactive container view controller (Me)~~
-### 2. ~~Functional data processing (Mark Corbyn)~~
-### 3. <something> (Jeames Bone)
+### 2. Reactive Notifications (Jeames Bone)
+### 3. Functional data processing (Mark Corbyn)
 
 ---
 
@@ -432,7 +323,7 @@ for (id<Voucher> voucher in vouchersWithValue) {
 
 ---
 
-## We want dis:
+## We want this:
 
 ```objc
   @property id<NotificationProvider> notificationProvider;
@@ -541,7 +432,7 @@ The returned signal will fire an event every time the method is called.
 
 ---
 
-## Problem? Signal is too hot!
+## Problem?
 - We only get notifications sent *after* we subscribe.
 - We can't easily update app state or UI that is created after the notification is sent.
 
@@ -575,3 +466,127 @@ The returned signal will fire an event every time the method is called.
       }]
   }
 ```
+
+---
+
+### 1. ~~A reactive container view controller~~
+### 2. ~~Reactive Notifications~~
+### 3. Functional Data Processing
+
+
+---
+
+## Describing an algorithm with functions
+
+### Example: Finding the best voucher to cover a purchase
+
+- If there are vouchers with higher value than the purchase, use the lowest valued one
+- Otherwise, use the highest valued voucher available
+
+---
+
+# Imperative approach
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+  NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+  NSArray *sortedVouchers = [vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+	return [voucher1 compare:voucher2];
+  }];
+
+  id<Voucher> bestVoucher = nil;
+  for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+    if (!voucherAmount) continue;
+
+    if ([voucherAmount cch_isLessThen:purchaseAmount]) {
+      bestVoucher = voucher;
+    } else if ([voucherAmount cch_isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+
+---
+
+```objc
+- (NSComparisonResult)compare:(id<Voucher>)anotherVoucher
+
+	NSDecimalNumber *voucher1Amount = self.amount;
+	NSDecimalNumber *voucher2Amount = anotherVoucher.amount;
+
+	if (voucher1Amount == nil && voucher2Amount == nil) {
+	  return NSOrderedSame;
+	} else if (voucher1Amount == nil) {
+	  return NSOrderedDescending;
+	} else if (voucher2Amount == nil) {
+	  return NSOrderedAscending;
+	} else {
+	  return [voucher1Amount compare:voucher2Amount];
+	}
+}
+```
+
+---
+
+# Separate the nil filter?
+
+```objc
+NSMutableArray *vouchersWithValue = [NSMutableArray array];
+for (id<Voucher> voucher in sortedVouchers) {
+	if (voucher.amount) {
+	  [vouchersWithValue addObject:voucher];
+	}
+}
+
+id<Voucher> bestVoucher = nil;
+for (id<Voucher> voucher in vouchersWithValue) {
+  NSDecimalNumber *voucherAmount = voucher.amount;
+  if ([voucherAmount cch_isLessThen:purchaseAmount]) {
+    bestVoucher = voucher;
+  } else if ([voucherAmount cch_isGreaterThanOrEqualTo:purchaseAmount]) {
+    bestVoucher = voucher;
+    break;
+  }
+}
+```
+
+---
+
+# Functional
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+[[[[[[[[self voucherLibrary]
+    vouchers]
+    sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+      return [voucher1 compare:voucher2];
+    }]
+    rac_sequence]
+    filter:^BOOL(id<Voucher> voucher) {
+      return voucher.amount != nil;
+    }]
+    cch_takeUptoBlock:^BOOL(id<Voucher> voucher) {
+      return [voucher.amount cch_isGreaterThanOrEqualTo:purchaseAmount];
+    }]
+    array]
+    lastObject];
+```
+
+---
+
+### 1. ~~A reactive container view controller~~
+### 2. ~~Reactive Notifications~~
+### 3. ~~Functional Data Processing~~
+
+---
+
+# Where to go next?
+
+---
