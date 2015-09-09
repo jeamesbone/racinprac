@@ -1,6 +1,6 @@
-# [fit] RAC
-# [fit] IN
-# [fit] PRACTICE
+# [fit] ReactiveCocoa
+# [fit] in
+# [fit] Practice
 
 #### Mark Corbyn (@markcorbyn) — Jeames Bone (@jeamesbone)
 #### YOW Connected
@@ -74,7 +74,7 @@ RACSignal *combineLatest = [firstSignal combineLatestWith:secondSignal];
 
 ---
 
-# What *haven’t* we learned?
+# How far can you go?
 ^ ReactiveCocoa is a very powerful tool for modeling systems in your app, and we'd like to show you some more exciting examples.
 
 ^ All examples will be taken from real code my team's worked on
