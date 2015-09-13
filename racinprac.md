@@ -128,9 +128,9 @@ RACSignal *authenticatedSignal = RACObserve(authStore, authenticated);
 // Pick a view controller
 RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthenticated) {
   if (isAuthenticated.boolValue) {
-    return [HomePageViewController new];
+    return [DashboardViewController new];
   } else {
-    return [LandingPageViewController new];
+    return [LoginViewController new];
   }
 }];
 ```
