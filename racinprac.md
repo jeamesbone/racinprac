@@ -500,7 +500,7 @@ The returned signal will fire an event every time the method is called.
 
 ### Example: Finding the best voucher to cover a purchase
 
-- If there are vouchers with higher value than the purchase, use the lowest valued one
+- If there are any vouchers with higher value than the purchase, use the lowest valued of those
 - Otherwise, use the highest valued voucher available
 
 ---
