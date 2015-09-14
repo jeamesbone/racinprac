@@ -539,6 +539,180 @@ The returned signal will fire an event every time the method is called.
 ---
 
 ```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+> NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+  NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
+
+  id<Voucher> bestVoucher = nil;
+  for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+    if (!voucherAmount) continue;
+
+    if ([voucherAmount isLessThan:purchaseAmount]) {
+      bestVoucher = voucher;
+    } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+
+---
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+  NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+> NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
+
+  id<Voucher> bestVoucher = nil;
+  for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+    if (!voucherAmount) continue;
+
+    if ([voucherAmount isLessThan:purchaseAmount]) {
+      bestVoucher = voucher;
+    } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+
+---
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+  NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+  NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
+
+  id<Voucher> bestVoucher = nil;
+> for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+    if (!voucherAmount) continue;
+
+    if ([voucherAmount isLessThan:purchaseAmount]) {
+      bestVoucher = voucher;
+    } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+
+---
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+  NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+  NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
+
+  id<Voucher> bestVoucher = nil;
+  for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+>   if (!voucherAmount) continue;
+
+    if ([voucherAmount isLessThan:purchaseAmount]) {
+      bestVoucher = voucher;
+    } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+
+---
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+  NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+  NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
+
+  id<Voucher> bestVoucher = nil;
+  for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+    if (!voucherAmount) continue;
+
+>   if ([voucherAmount isLessThan:purchaseAmount]) {
+      bestVoucher = voucher;
+    } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+
+
+---
+
+```objc
+- (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
+
+  NSArray *vouchers = [[self voucherLibrary] vouchers];
+
+  NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
+
+  id<Voucher> bestVoucher = nil;
+  for (id<Voucher> voucher in sortedVouchers) {
+    NSDecimalNumber *voucherAmount = voucher.amount;
+    if (!voucherAmount) continue;
+
+    if ([voucherAmount isLessThan:purchaseAmount]) {
+      bestVoucher = voucher;
+>   } else if ([voucherAmount isGreaterThanOrEqualTo:purchaseAmount]) {
+      bestVoucher = voucher;
+      break;
+    }
+  }
+
+  return bestVoucher;
+}
+```
+---
+
+```objc
 - (NSComparisonResult)compare:(id<Voucher>)anotherVoucher
 
 	NSDecimalNumber *voucher1Amount = self.amount;
