@@ -507,14 +507,17 @@ The returned signal will fire an event every time the method is called.
 
 # Imperative approach
 
+---
+
 ```objc
 - (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = [vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
-	return [voucher1 compare:voucher2];
-  }];
+  NSArray *sortedVouchers = 
+  	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+		return [voucher1 compare:voucher2];
+  	}];
 
   id<Voucher> bestVoucher = nil;
   for (id<Voucher> voucher in sortedVouchers) {
@@ -581,11 +584,14 @@ for (id<Voucher> voucher in vouchersWithValue) {
 
 # Functional
 
+---
+
 ```objc
 - (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
 [[[[[[[[self voucherLibrary]
     vouchers]
-    sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
+    sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, 
+    											   id<Voucher> voucher2) {
       return [voucher1 compare:voucher2];
     }]
     rac_sequence]
