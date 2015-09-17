@@ -221,10 +221,6 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 
 ### Tying a 🎀 on it
 
----
-
-### Tying a 🎀 on it
-
 - What happens if the view controller changes rapidly (faster than the animation?)
 
 ---
@@ -305,6 +301,14 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
 
 ---
 
+## What have we learned?
+
+- Signals can represent real world events (Logging in/out)
+- We can transform them to something useful (view controllers)
+- We can control the timing through operators
+
+---
+
 ### 1. ~~A reactive container view controller~~
 ### 2. Reactive Notifications
 ### 3. Functional data processing
@@ -359,10 +363,6 @@ RACSignal *viewControllerSignal = [authenticatedSignal map:^(NSNumber *isAuthent
       }]
   }
 ```
-
----
-
-![](http://vignette1.wikia.nocookie.net/katyperry/images/4/45/Katyperry_hotncold.jpg/revision/latest?cb=20140211091238)
 
 ---
 
@@ -489,6 +489,14 @@ The returned signal will fire an event every time the method is called.
 
 ---
 
+## What have we learned?
+
+- Signals can model complex app behaviour like notifications
+- We can combine signals in interesting ways
+- Helpers like signalForSelector allow us to lift regular functions into signals
+
+---
+
 ### 1. ~~A reactive container view controller~~
 ### 2. ~~Reactive Notifications~~
 ### 3. Functional Data Processing
@@ -514,7 +522,7 @@ The returned signal will fire an event every time the method is called.
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = 
+  NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -543,7 +551,7 @@ The returned signal will fire an event every time the method is called.
 
 > NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = 
+  NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -572,7 +580,7 @@ The returned signal will fire an event every time the method is called.
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-> NSArray *sortedVouchers = 
+> NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -601,7 +609,7 @@ The returned signal will fire an event every time the method is called.
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = 
+  NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -630,7 +638,7 @@ The returned signal will fire an event every time the method is called.
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = 
+  NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -659,7 +667,7 @@ The returned signal will fire an event every time the method is called.
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = 
+  NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -689,7 +697,7 @@ The returned signal will fire an event every time the method is called.
 
   NSArray *vouchers = [[self voucherLibrary] vouchers];
 
-  NSArray *sortedVouchers = 
+  NSArray *sortedVouchers =
   	[vouchers sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, id<Voucher> voucher2) {
 		return [voucher1 compare:voucher2];
   	}];
@@ -764,7 +772,7 @@ for (id<Voucher> voucher in vouchersWithValue) {
 - (id<Voucher>)voucherForPurchaseAmount:(NSDecimalNumber *)purchaseAmount {
 [[[[[[[[self voucherLibrary]
     vouchers]
-    sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1, 
+    sortedArrayUsingComparator:^NSComparisonResult(id<Voucher> voucher1,
     											   id<Voucher> voucher2) {
       return [voucher1 compare:voucher2];
     }]
@@ -778,6 +786,14 @@ for (id<Voucher> voucher in vouchersWithValue) {
     array]
     lastObject];
 ```
+
+---
+
+## What have we learned?
+
+- Functional code can be more readable
+- It's easy to convert between traditional code and ReactiveCocoa
+- Signals are lazy
 
 ---
 
